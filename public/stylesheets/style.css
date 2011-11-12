@@ -1,0 +1,143 @@
+body {
+font: 14px "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+background: #555;
+padding: 0;
+margin: 0;
+overflow: hidden;
+}
+
+div.presentation {
+position: absolute;
+width: 100%;
+display: table-cell;
+	 vertical-align: middle;
+height: 100%;
+background: inherit;
+}
+
+div.operation {
+position: absolute;
+top: 0px;
+right: 0px;
+width: 100%;
+text-align: center;
+}
+
+div.counter {
+position: absolute;
+bottom: 20px;
+right: 20px;
+width: 100%;
+text-align: center;
+
+}
+
+div.slides {
+width: 100%;
+height: 100%;
+overflow: hidden;
+left: 0;
+top: 0;
+position: absolute;
+display: block;  
+	 -webkit-transition: -webkit-transform 1s ease-in-out; 
+}
+
+div.slide {
+display: none;
+position: absolute;
+overflow: hidden;
+width: 900px;
+height: 700px;
+left: 50%;
+top: 50%;
+     margin-top: -350px;
+background: -webkit-gradient(linear, left bottom, left top, from(#bbb), to(#fff));
+	    -webkit-transition: margin 0.25s ease-in-out; 
+	    background-color: #eee;
+	    -webkit-border-top-left-radius: 30px;
+	    -webkit-border-top-right-radius: 30px;
+	    -webkit-border-bottom-right-radius: 30px;
+	    -webkit-border-bottom-left-radius: 30px;
+}
+
+div.slide p {
+	font-size: 35px;
+}
+
+.slide.far-past {
+display: block;
+	 margin-left: -2400px;
+}
+
+.slide.past {
+display: block;
+	 margin-left: -1400px;
+}
+
+.slide.current {
+display: block;
+	 margin-left: -450px;
+}
+
+.slide.future {
+display: block;
+	 margin-left: 500px;
+}
+
+.slide.far-future {
+display: block;
+	 margin-left: 1500px;
+}
+
+section {
+	font-size: 50px;
+color: #3f3f3f;
+       text-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+margin: 100px 30px 0 30px;
+overflow: hidden;
+	  line-height: 150%;
+	  text-align: center;
+display: table-cell;
+	 vertical-align: middle;
+height: 700px;
+width: 900px;
+}
+#labelArea {
+color: #666666;
+       font-size: 10pt;
+       text-align: right;
+width: 100%;
+height: 600px;
+	list-style-type: none;
+}
+
+.label {
+position: absolute;
+	  text-align: left;
+background: #ffff99;
+	    font-size: 10pt;
+border: #999999 1px solid;
+width: 200px;
+padding: 5px;
+opacity: 0.6;
+}
+
+.label SPAN {
+color: #222222;
+width:190px;
+      word-wrap: break-word;
+}
+
+.label textarea {
+background: #ffff99;
+width: 190px;
+       font-size: 13px;
+border: none;
+}
+
+.label input {
+color: #222222;
+float: right;
+}
+
