@@ -143,6 +143,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('update', function(data) {
      if (data) {
        Comment.findById(data.id, function(err, comment) {
+         if(!err && comment) {
          comment.x = data.x;
          comment.y = data.y;
          comment.save(function(err){
@@ -153,6 +154,9 @@ io.sockets.on('connection', function (socket) {
              console.log(err);
            }
          });
+         } else {
+           console.log(err);
+         }
        });
      }
   });
