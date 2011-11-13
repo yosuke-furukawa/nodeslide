@@ -129,7 +129,7 @@ io.sockets.on('connection', function (socket) {
     console.log(data);
     if (data) {
       Comment.findById(data.id, function (err, comment) {
-	if (!err) {
+	if (!err && comment) {
             comment.remove();
             socket.emit('deleted', {id: data.id});
             socket.broadcast.emit('deleted', {id: data.id});
