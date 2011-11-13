@@ -118,7 +118,7 @@ window.onload = function (){
 	}
 	updateSlideClasses(); 
 	slidesClass.addEventListener("dblclick", addLabel, false);
-	showhide();
+//	showhide();
         }
 function showhide () {
 	var hideButton = document.createElement("INPUT");
