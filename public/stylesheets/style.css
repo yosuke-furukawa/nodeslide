@@ -141,3 +141,11 @@ color: #222222;
 float: right;
 }
 
+pre { 
+border:1px solid #ccc;
+background:#fafafa;
+padding:10px 20px;
+margin:0 0 1em 0;
+overflow:auto;
+}
+
