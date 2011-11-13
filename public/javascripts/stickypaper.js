@@ -1,5 +1,5 @@
 var socket = io.connect();
-var slides = document.getElementsByClassName("slides")[0];
+var slidesClass = document.getElementsByClassName("slides")[0];
 var operation = document.getElementsByClassName("operation")[0];
 socket.on('loaded', function (data) {
 		labelLoad(data);
@@ -39,7 +39,8 @@ socket.on('created', function (data) {
 		socket.json.emit('text edit', {id: newLabel.id, message: htmlstr});
 		newLabel.onmousedown = function (evt) { onDrag(evt, this) };
 		newLabel.ondblclick = function (evt) { reEdit(evt, this); return false; };
-		slides.addEventListener("dblclick", addLabel, false);
+		slidesClass.addEventListener("dblclick", addLabel, false);
+		document.addEventListener('keydown', handleBodyKeyDown, false);
 	}
 
 	//編集をキャンセルした場合の処理
@@ -50,7 +51,9 @@ socket.on('created', function (data) {
 		var node = newLabel.parentNode;
 		node.removeChild(newLabel);
 
-		slides.addEventListener("dblclick", addLabel, false);
+		slidesClass.addEventListener("dblclick", addLabel, false);
+		document.addEventListener('keydown', handleBodyKeyDown, false);
+
 	};
 	inputForm.appendChild(cancelButton);
 	//上記内容をAppend
@@ -71,7 +74,9 @@ socket.on('created by other', function(data){
 	newLabel.appendChild(labelText);
 	newLabel.onmousedown = function (evt) { onDrag(evt, this) };
 	newLabel.ondblclick = function (evt) { reEdit(evt, this); return false; };
-	slides.addEventListener("dblclick", addLabel, false);
+	slidesClass.addEventListener("dblclick", addLabel, false);
+	document.addEventListener('keydown', handleBodyKeyDown, false);
+
        	document.getElementsByClassName('slide')[data.slideno].appendChild(newLabel);
         });
 socket.on('text edited', function(data){
@@ -106,8 +111,14 @@ socket.on('updated', function(data){
           label.style.top = data.y + "px";
         });
 window.onload = function (){
-	slides.addEventListener("dblclick", addLabel, false);
-//	showhide();
+        document.addEventListener('keydown', handleBodyKeyDown, false);
+	var els = slides;
+	for (var i = 0, el; el = els[i]; i++){
+		addClass(el, 'slide');
+	}
+	updateSlideClasses(); 
+	slidesClass.addEventListener("dblclick", addLabel, false);
+	showhide();
         }
 function showhide () {
 	var hideButton = document.createElement("INPUT");
@@ -122,7 +133,8 @@ function showhide () {
 }
 function addLabel (event) {
 	//新しいラベルの追加
-	slides.removeEventListener("dblclick", addLabel, false);
+	slidesClass.removeEventListener("dblclick", addLabel, false);
+        document.removeEventListener('keydown', handleBodyKeyDown, false);
 	var layerX = event.layerX;
         var layerY = event.layerY;
 	socket.json.emit('create', {x: layerX, y: layerY, slideno: currentSlideNo-1});
@@ -141,8 +153,8 @@ function onDrag (evt, item) {
 	orgY = item.style.top;
 	orgY = Number(orgY.slice(0, -2));
 
-	slides.addEventListener("mousemove", mousemove, false);
-	slides.addEventListener("mouseup", mouseup, false);
+	slidesClass.addEventListener("mousemove", mousemove, false);
+	slidesClass.addEventListener("mouseup", mouseup, false);
 
 	function mousemove(move) {
 		dx = move.screenX - x;
@@ -153,7 +165,7 @@ function onDrag (evt, item) {
 	}
 
 	function mouseup (){
-       		slides.removeEventListener("mousemove", mousemove, false);
+       		slidesClass.removeEventListener("mousemove", mousemove, false);
 	}
 
 }
@@ -167,7 +179,7 @@ function reEdit (evt, oDiv) {
 	oDiv.removeChild(oDiv.firstChild);
 
 	oDiv.ondblclick = function (){};
-	slides.removeEventListener("dblclick", addLabel, false);
+	slidesClass.removeEventListener("dblclick", addLabel, false);
 	oDiv.onmousedown = function(){};
 
 	//フォームを用意し、既に書いてあるテキストを代入
@@ -201,7 +213,9 @@ function reEdit (evt, oDiv) {
 		oDiv.onmousedown = function (evt) { onDrag(evt, this) };
 		oDiv.ondblclick = function (evt) { reEdit(evt,this); return false };
 
-		slides.addEventListener("dblclick", addLabel, false);
+		slidesClass.addEventListener("dblclick", addLabel, false);
+                document.addEventListener('keydown', handleBodyKeyDown, false);
+
 	}
 
 	//編集をキャンセルした場合の処理
@@ -227,7 +241,8 @@ function reEdit (evt, oDiv) {
 		oDiv.onmousedown = function (evt) { onDrag(evt, this) };
 		oDiv.ondblclick = function (evt) { reEdit(evt,this) ; return false;};
 
-		slides.addEventListener("dblclick", addLabel, false);
+		slidesClass.addEventListener("dblclick", addLabel, false);
+		document.addEventListener('keydown', handleBodyKeyDown, false);
 	};
 	inputForm.appendChild(cancelButton);
 

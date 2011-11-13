@@ -109,7 +109,9 @@ io.sockets.on('connection', function (socket) {
     if (data && data.message) {
       Comment.findById(data.id, function (err, comment) {
         if (!err) {
-          comment.message = data.message;
+          if (data.message != null) {
+            comment.message = data.message;
+          }
           comment.save(function(err){
             if (!err) {
               socket.emit('text edited', {id: comment.id, slideno: comment.slideno, x: comment.x, y: comment.y, message: comment.message});

@@ -1,5 +1,4 @@
  var currentSlideNo = 1;
-(function() {
  var slides = document.getElementsByClassName('slide');
 
  var spaces = /\s+/, a1 = [""];
@@ -101,7 +100,7 @@
  };
 
  // initialize
- (function() {
+ window.onload = function() {
   document.addEventListener('keydown', handleBodyKeyDown, false);
 
   var els = slides;
@@ -109,6 +108,5 @@
   addClass(el, 'slide');
   }
   updateSlideClasses(); 
-  })();
-})();
+  }
 

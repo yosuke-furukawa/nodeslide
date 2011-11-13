@@ -1,0 +1,62 @@
+div(class="presentation")
+  div(class="operation")
+  div(class="slides")
+    div(class="slide")
+      section
+        h1 Realtime stickypapers
+    div(class="slide")
+      section
+        h1 リアルタイム付箋アプリ 
+    div(class="slide")
+      section
+        h4
+          | どうも、
+          a(href="http://twitter.com/#!/yosuke_furukawa") yosuke_furukawa
+          | です。
+        a(href="http://twitter.com/#!/yosuke_furukawa") 
+          img(src="images/twitter_icon.jpg")
+        p 
+          | blog:
+          a(href="http://d.hatena.ne.jp/yosuke_furukawa/") from scratch
+    div(class="slide")
+      section
+        h4 Node.jsでchatとかばかり
+        h4 作っていましたが、
+    div(class="slide")
+      section
+        h4 少し自分に役に立ちそうなやつを
+        h4 作ろうと思ってやってみました。
+    div(class="slide")
+      section
+        h4 まぁとりあえず、
+        h4 スライドのどこかをダブルクリック
+        h4 してみてください。
+        p (IEの人は動かないと思う。Chrome推奨。)
+    div(class="slide")
+      section
+        h4 付箋が出ましたか?
+        h4 中に何か書くこともできます。
+        h4 書いた内容はSocket.ioで
+        h4 リアルタイムに
+        h4 更新されています
+    div(class="slide")
+      section
+        h4 dragすれば付箋位置を変えられます
+        h4 これももちろんSocket.ioで
+        h4 リアルタイムに更新されます。
+    div(class="slide")
+      section
+        h3 中身は
+        p WebSocket + Node + MongoDB 
+        h3 です。
+    div(class="slide")
+      section
+        p ひとまず公開しますが、このままだと、付箋ばかりになりそうなので、付箋を隠せるモードも追加したいと思います。
+    div(class="slide")
+      section
+        p
+         | ソースコードは
+         a(href="https://github.com/yosuke-furukawa/nodeslide") GitHub: https://github.com/yosuke-furukawa/nodeslide
+         | にあります。
+script(src="javascripts/slide.js")
+script(src="javascripts/stickypaper.js")
