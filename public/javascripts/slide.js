@@ -102,10 +102,14 @@
  function getCurrentSlide() {
   var url = location.href;
 
-  var start = url.lastIndexOf('#slide')+6;
-  var slideNum = url.substring(start);
+  var start = url.lastIndexOf('#slide');
+  if (start >= 0) {
+  var slideNum = url.substring(start+6);
     console.log(slideNum);
     return slideNum;
+  } else {
+    return 1;
+  }
  }
 
 
