@@ -1,4 +1,4 @@
- var currentSlideNo = 1;
+ var currentSlideNo = getCurrentSlide();
  var slides = document.getElementsByClassName('slide');
 
  var spaces = /\s+/, a1 = [""];
@@ -99,14 +99,14 @@
 	 }
  };
 
- // initialize
- window.onload = function() {
-  document.addEventListener('keydown', handleBodyKeyDown, false);
+ function getCurrentSlide() {
+  var url = location.href;
 
-  var els = slides;
-  for (var i = 0, el; el = els[i]; i++){
-  addClass(el, 'slide');
-  }
-  updateSlideClasses(); 
-  }
+  var start = url.lastIndexOf('#slide')+6;
+  var slideNum = url.substring(start);
+    console.log(slideNum);
+    return slideNum;
+ }
+
+
 

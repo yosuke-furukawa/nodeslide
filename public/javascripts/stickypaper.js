@@ -4,6 +4,13 @@ var operation = document.getElementsByClassName("operation")[0];
 socket.on('loaded', function (data) {
 		labelLoad(data);
 		});
+socket.on('counter', function (data) {
+  var counter = document.getElementsByClassName("counter")[0];
+  var slideId = getSlideId();
+  if (slideId == data.slideId) {
+    counter.innerHTML = "now reading : " + data.count + " people";
+  }
+});
 socket.on('created', function (data) {
 	var newLabel = document.createElement("DIV");
         var message;
@@ -50,7 +57,7 @@ socket.on('created', function (data) {
 	cancelButton.onclick = function () { 
 		var node = newLabel.parentNode;
 		node.removeChild(newLabel);
-
+		socket.json.emit('cancel', {id: newLabel.id});
 		slidesClass.addEventListener("dblclick", addLabel, false);
 		document.addEventListener('keydown', handleBodyKeyDown, false);
 
@@ -110,6 +117,12 @@ socket.on('updated', function(data){
           label.style.left = data.x + "px";
           label.style.top = data.y + "px";
         });
+socket.on('cancelled', function(data){
+	  var label = document.getElementById(data.id);
+          var node = label.parentNode;
+	  node.removeChild(label);
+
+	});
 window.onload = function (){
         document.addEventListener('keydown', handleBodyKeyDown, false);
 	var els = slides;
@@ -118,18 +131,39 @@ window.onload = function (){
 	}
 	updateSlideClasses(); 
 	slidesClass.addEventListener("dblclick", addLabel, false);
-//	showhide();
+	createOperationMenu();
         }
-function showhide () {
-	var hideButton = document.createElement("INPUT");
+function createOperationMenu() {
+	var showButton = document.createElement("BUTTON");
+        showButton.type = "button";
+        showButton.innerHTML = "show";
+        //hideButton.addEventListener('click', hideAll, false);
+	showButton.onclick = function(){ 
+          showAll(); };
+
+	var hideButton = document.createElement("BUTTON");
         hideButton.type = "button";
-        hideButton.value = "hide";
-	hideButton.addEventListener("click", hideAll, false);
-        hideButton.onclick = function () {
-          hideAll(this);
-          return false;
-        };
+        hideButton.innerHTML = "hide";
+        //hideButton.addEventListener('click', hideAll, false);
+	hideButton.onclick = function(){ 
+          hideAll(); };
+
+        var colorSelector = document.createElement("SELECT");
+        var yellowOption = document.createElement("OPTION");
+        yellowOption.value = "yellow";
+        yellowOption.innerHTML = "yellow";
+        yellowOption.onselect = function() {
+          console.log("yellow");
+        }
+        var redOption = document.createElement("OPTION");
+        redOption.value = "red";
+        redOption.innerHTML = "red";
+        colorSelector.appendChild(yellowOption);
+        colorSelector.appendChild(redOption);
+
+        operation.appendChild(showButton);
 	operation.appendChild(hideButton);
+        //operation.appendChild(colorSelector);
 }
 function addLabel (event) {
 	//新しいラベルの追加
@@ -283,6 +317,21 @@ function labelLoad (data) {
 		reEdit(evt, this);
 		return false;
 	};
+        socket.json.emit('count up', {slideId: getSlideId()});
+}
+
+function getSlideId() {
+  var url = location.href;
+
+  var start = url.lastIndexOf('/')+1;
+  var end = url.indexOf('#');
+  if (start < end) {
+    var slideId = url.substring(start, end);
+    console.log(slideId);
+    return slideId;
+  } else {
+    return 'default';
+  }
 }
 
 function escapeHTML(str) {
@@ -300,7 +349,7 @@ function labelSave () {
 	//ラベルのセーブ
 
 }
-function showAll(event) {
+function showAll() {
   var labels = document.getElementsByClassName("label");
   console.log(labels);
   for (var i=0; i<labels.length; i++) {
@@ -308,7 +357,7 @@ function showAll(event) {
     labels[i].style.display='';
   }
 }
-function hideAll(event) {
+function hideAll() {
   var labels = document.getElementsByClassName("label");
   console.log(labels.length);
   for (var i=0; i<labels.length; i++) {

@@ -19,6 +19,9 @@ var commentSchema = new Schema({
     x       :Number,
     y       :Number
 });
+var slideKey = 'default';
+var socketIds = new Array();
+var slideMap = new Array();
 
 
 // Configuration
@@ -44,7 +47,27 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', routes.index);
+app.get('/favicon.ico', function(req, res){
+  res.render('favicon.ico', {});
+});
+
+app.get('/:id?', function(req, res){
+  console.log(req.params.id);
+  if (!req.params.id) {
+    slideKey = 'default';
+  } else {
+    slideKey = req.params.id;
+  }
+  var counter = slideMap[slideKey];
+  if (!counter) {
+    slideMap[slideKey] = 0;
+  }
+  if(slideKey != 'default') {
+    res.render(slideKey, { slideId: slideKey });
+  } else {
+    res.render('index', { slideId: 'default' });
+  }
+});
 
 app.listen(process.env.PORT || 3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
@@ -52,14 +75,36 @@ console.log("Express server listening on port %d in %s mode", app.address().port
 // Process
 io = io.listen(app);
 io.sockets.on('connection', function (socket) {
-  counter++;
-  io.sockets.emit('counter', {count: counter});
 
-  socket.on('disconnect', function () {
-    counter--;
-    io.sockets.emit('counter', {count: counter});
+  socket.on('count up',function(data) {
+    socket.set('slideId', data.slideId, function(){
+      if (socketIds.indexOf(socket.id) < 0) {
+        socketIds.push(socket.id);
+        console.log(socket.id);
+        var count = slideMap[data.slideId];
+        count++;
+        slideMap[data.slideId] = count;
+        io.sockets.emit('counter', {count : count, slideId: data.slideId});
+      }
+    });
   });
-  Comment.find(function(err,docs){ 
+  socket.on('disconnect', function () {
+    console.log('disconnect');
+    var index = socketIds.indexOf(socket.id);
+    socketIds.splice(index, 1);
+    socket.get('slideId', function (err, slideId){
+      if (!err) {
+      console.log("slideId disconnect" + slideId);
+      var count = slideMap[slideId];
+      count--;
+      slideMap[slideId] = count;
+      io.sockets.emit('counter', {count : count, slideId: slideId});
+      } else {
+        console.log(err);
+      }
+    });
+  });
+  Comment.find({slideKey: slideKey}, function(err,docs){ 
         if(!err) {
             for (var i = 0; i < docs.length; i++ ) {
                 console.log(docs[i]);
@@ -91,7 +136,7 @@ io.sockets.on('connection', function (socket) {
       comment.slideno = data.slideno;
       comment.x = data.x;
       comment.y = data.y;
-      comment.slideKey = 'default';
+      comment.slideKey = slideKey;
       console.log(comment);
       comment.save(function(err, doc) {
 	console.log('saved: %s', doc.id);
@@ -137,6 +182,20 @@ io.sockets.on('connection', function (socket) {
           console.log(err);
         }
       });
+    }
+  });
+
+  socket.on('cancel', function(data) {
+    if (data) {
+      Comment.findById(data.id, function (err, comment) {
+	if (!err && comment) {
+            comment.remove();
+            socket.broadcast.emit('cancelled', {id: data.id});
+        } else {
+          console.log(err);
+        }
+      });
+
     }
   });
 
