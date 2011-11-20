@@ -141,8 +141,8 @@ io.sockets.on('connection', function (socket) {
       comment.save(function(err, doc) {
 	console.log('saved: %s', doc.id);
         if (!err) { 
-          socket.emit('created', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y});
-          socket.broadcast.emit('created by other', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y});
+          socket.emit('created', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y, slideKey:doc.slideKey});
+          socket.broadcast.emit('created by other', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y, slideKey:doc.slideKey});
         } else {
           console.log(err);
         }
@@ -159,8 +159,8 @@ io.sockets.on('connection', function (socket) {
           }
           comment.save(function(err){
             if (!err) {
-              socket.emit('text edited', {id: comment.id, slideno: comment.slideno, x: comment.x, y: comment.y, message: comment.message});
-              socket.broadcast.emit('text edited', {id: comment.id, slideno: comment.slideno, x: comment.x, y: comment.y, message: comment.message});
+              socket.emit('text edited', {id: comment.id, slideno: comment.slideno, x: comment.x, y: comment.y, message: comment.message, slideKey:comment.slideKey});
+              socket.broadcast.emit('text edited', {id: comment.id, slideno: comment.slideno, x: comment.x, y: comment.y, message: comment.message, slideKey:comment.slideKey});
             } else {
               console.log(err);
             }

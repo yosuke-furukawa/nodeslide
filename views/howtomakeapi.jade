@@ -2,61 +2,32 @@ div(class="presentation")
   div(class="slides")
     div(class="slide")
       section
-        h1 How to make good APIs
+        h1 How To Design a Good API and Why it matters
     div(class="slide")
       section
-        h1 リアルタイム付箋アプリ 
+        h1 良いAPIのデザイン方法と何故デザインが必要なのか。 
     div(class="slide")
       section
-        h4
-          | どうも、
-          a(href="http://twitter.com/#!/yosuke_furukawa") yosuke_furukawa
-          | です。
-        a(href="http://twitter.com/#!/yosuke_furukawa") 
-          img(src="images/twitter_icon.jpg")
-        p 
-          | blog:
-          a(href="http://d.hatena.ne.jp/yosuke_furukawa/") from scratch
+        h4 元にした内容は以下のプレゼンテーションです。
+        h4 
+          a(href="http://lcsd05.cs.tamu.edu/slides/keynote.pdf") keynote
     div(class="slide")
-      section
-        h4 Node.jsでchatとかばかり
-        h4 作っていましたが、
+      section(class="left")
+        h4(class="small") なぜAPI設計は重要か？
+          ul
+          li APIは会社の資産の中心
+            ul
+              li 顧客が重点をおいて投資するのは：
+               | 購入すること、コードを書ける、学習できること
+              li 禁止になっているAPIを利用することを止めるのにかかるコストもある
+              li 成功する公開されたAPIは顧客の気持ちをつなぐ。
+          li APIは会社の重要なライブラリにもなる
+           | 逆にBad APIは鳴り止まないサポートコールを生み続ける。
+          li 公開されたAPIは永遠 - 一度公開されたら二度と変更できない。
+
     div(class="slide")
-      section
-        h4 少し自分に役に立ちそうなやつを
-        h4 作ろうと思ってやってみました。
-    div(class="slide")
-      section
-        h4 まぁとりあえず、
-        h4 スライドのどこかをダブルクリック
-        h4 してみてください。
-        p (IEの人は動かないと思う。Chrome推奨。)
-    div(class="slide")
-      section
-        h4 付箋が出ましたか?
-        h4 中に何か書くこともできます。
-        h4 書いた内容はSocket.ioで
-        h4 リアルタイムに
-        h4 更新されています
-    div(class="slide")
-      section
-        h4 dragすれば付箋位置を変えられます
-        h4 これももちろんSocket.ioで
-        h4 リアルタイムに更新されます。
-    div(class="slide")
-      section
-        h3 中身は
-        p WebSocket + Node + MongoDB 
-        h3 です。
-    div(class="slide")
-      section
-        p ひとまず公開しますが、このままだと、付箋ばかりになりそうなので、付箋を隠せるモードも追加したいと思います。
-    div(class="slide")
-      section
-        p
-         | ソースコードは
-         a(href="https://github.com/yosuke-furukawa/nodeslide") GitHub: https://github.com/yosuke-furukawa/nodeslide
-         | にあります。
+      section(class="left)
+        h4 訳したんですが、ココに入れきれていません。もう少し待ってください。
   div(class="counter") 0
   div(class="operation")
 script(src="javascripts/slide.js")

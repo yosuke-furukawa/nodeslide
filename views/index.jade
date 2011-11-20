@@ -51,12 +51,40 @@ div(class="presentation")
     div(class="slide")
       section
         p ひとまず公開しますが、このままだと、付箋ばかりになりそうなので、付箋を隠せるモードも追加したいと思います。
+        p 
+          span(style="color:#FF0000") 追加しました!
+          | 詳しくは 12ページ以降を
+          | 参考にしてください
     div(class="slide")
       section
         p
          | ソースコードは
          a(href="https://github.com/yosuke-furukawa/nodeslide") GitHub: https://github.com/yosuke-furukawa/nodeslide
          | にあります。
+    div(class="slide")
+      section
+        p さて少しだけですが、アップグレードしました。
+        p 今回アップグレードしたのは、以下の3点
+        li 付箋のhide/showボタンの追加
+        li 見ている人の数追加。
+        li 複数プレゼンに対応しました。
+    div(class="slide")
+      section
+        p hide/show ボタンの追加
+        p 上にあるhideボタンを押してみてください。
+        p 付箋が隠れます。
+        p 隠した付箋はshowボタンを押せばすぐに復旧します
+    div(class="slide")
+      section
+        p 見ている人の数が見えるようになりました。
+        p 右下のnow readingで出ている数字が見ている人の数です。
+        p タブを上げれば増えると思います。
+    div(class="slide")
+      section
+        p 複数プレゼンに対応しました。
+        p index以外にも別のプレゼンテーションを作れるようにしてみました。
+        a(href="http://yosuketest.node-ninja.com/howtomakeapi") http://yosuketest.node-ninja.com/howtomakeapi
+        p にいってみてください。
   div(class="counter") 0
   div(class="operation")
 script(src="javascripts/slide.js")

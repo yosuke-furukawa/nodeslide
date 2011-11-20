@@ -3,6 +3,7 @@ var slidesClass = document.getElementsByClassName("slides")[0];
 var operation = document.getElementsByClassName("operation")[0];
 socket.on('loaded', function (data) {
 		labelLoad(data);
+                socket.json.emit('count up', {slideId: getSlideId()});
 		});
 socket.on('counter', function (data) {
   var counter = document.getElementsByClassName("counter")[0];
@@ -12,27 +13,28 @@ socket.on('counter', function (data) {
   }
 });
 socket.on('created', function (data) {
-	var newLabel = document.createElement("DIV");
-        var message;
-	newLabel.id = data.id;
-	newLabel.className = "label";
-	newLabel.style.left = data.x + "px";
-	newLabel.style.top = data.y + "px";
-	//入力フォームの用意
-	var inputForm = document.createElement("FORM");
+        if (data.slideKey == getSlideId()) {
+	  var newLabel = document.createElement("DIV");
+          var message;
+	  newLabel.id = data.id;
+	  newLabel.className = "label";
+	  newLabel.style.left = data.x + "px";
+	  newLabel.style.top = data.y + "px";
+	  //入力フォームの用意
+	  var inputForm = document.createElement("FORM");
 
-	var inputText = document.createElement("TEXTAREA");
-	inputText.style.cols = "10";
-	inputText.style.rows = "3";
-	inputForm.appendChild(inputText);
+	  var inputText = document.createElement("TEXTAREA");
+	  inputText.style.cols = "10";
+	  inputText.style.rows = "3";
+	  inputForm.appendChild(inputText);
 
-	var okButton = document.createElement("INPUT");
-	okButton.type = "button";
-	okButton.value = "ok";
-	okButton.onclick = function () { writeText() };
-	inputForm.appendChild(okButton);
-	//OKされたらテキストを表示し、フォームを消す
-	var writeText = function () {
+	  var okButton = document.createElement("INPUT");
+	  okButton.type = "button";
+	  okButton.value = "ok";
+	  okButton.onclick = function () { writeText() };
+	  inputForm.appendChild(okButton);
+	  //OKされたらテキストを表示し、フォームを消す
+	  var writeText = function () {
 		var labelText = document.createElement("SPAN");
 		var str = inputText.value;
 		str = escapeHTML(str);
@@ -48,64 +50,66 @@ socket.on('created', function (data) {
 		newLabel.ondblclick = function (evt) { reEdit(evt, this); return false; };
 		slidesClass.addEventListener("dblclick", addLabel, false);
 		document.addEventListener('keydown', handleBodyKeyDown, false);
-	}
+	  }
 
-	//編集をキャンセルした場合の処理
-	var cancelButton = document.createElement("INPUT");
-	cancelButton.type = "button";
-	cancelButton.value = "x";
-	cancelButton.onclick = function () { 
+	  //編集をキャンセルした場合の処理
+	  var cancelButton = document.createElement("INPUT");
+	  cancelButton.type = "button";
+	  cancelButton.value = "x";
+	  cancelButton.onclick = function () { 
 		var node = newLabel.parentNode;
 		node.removeChild(newLabel);
 		socket.json.emit('cancel', {id: newLabel.id});
 		slidesClass.addEventListener("dblclick", addLabel, false);
 		document.addEventListener('keydown', handleBodyKeyDown, false);
 
-	};
-	inputForm.appendChild(cancelButton);
-	//上記内容をAppend
-	newLabel.appendChild(inputForm);
-	document.getElementsByClassName('slide')[data.slideno].appendChild(newLabel);
-	inputText.focus();
-
+	  };
+	  inputForm.appendChild(cancelButton);
+	  //上記内容をAppend
+	  newLabel.appendChild(inputForm);
+	  document.getElementsByClassName('slide')[data.slideno].appendChild(newLabel);
+	  inputText.focus();
+        }
 	});
 socket.on('created by other', function(data){
-        var newLabel = document.createElement("DIV");
-        var message;
-	newLabel.id = data.id;
-	newLabel.className = "label";
-	newLabel.style.left = data.x + "px";
-	newLabel.style.top = data.y + "px";
-	var labelText = document.createElement("SPAN");
-	labelText.innerHTML = "someone writing....";
-	newLabel.appendChild(labelText);
-	newLabel.onmousedown = function (evt) { onDrag(evt, this) };
-	newLabel.ondblclick = function (evt) { reEdit(evt, this); return false; };
-	slidesClass.addEventListener("dblclick", addLabel, false);
-	document.addEventListener('keydown', handleBodyKeyDown, false);
+        if (data.slideKey == getSlideId()) {
+          var newLabel = document.createElement("DIV");
+          var message;
+	  newLabel.id = data.id;
+	  newLabel.className = "label";
+	  newLabel.style.left = data.x + "px";
+	  newLabel.style.top = data.y + "px";
+	  var labelText = document.createElement("SPAN");
+	  labelText.innerHTML = "someone writing....";
+	  newLabel.appendChild(labelText);
+	  newLabel.onmousedown = function (evt) { onDrag(evt, this) };
+	  newLabel.ondblclick = function (evt) { reEdit(evt, this); return false; };
+	  slidesClass.addEventListener("dblclick", addLabel, false);
+	  document.addEventListener('keydown', handleBodyKeyDown, false);
 
-       	document.getElementsByClassName('slide')[data.slideno].appendChild(newLabel);
+       	  document.getElementsByClassName('slide')[data.slideno].appendChild(newLabel);
+        }
         });
 socket.on('text edited', function(data){
-        var label = document.getElementById(data.id);
-	var xButtonLabel = label.getElementsByTagName("A")[0];
-        var labelText = label.getElementsByTagName("SPAN")[0];
-        console.log(xButtonLabel);
-	if (xButtonLabel) {
-	  label.removeChild(xButtonLabel);
-	}
-	label.removeChild(labelText);
-        var xButton = document.createElement("A");
-	xButton.href = "#";
-	xButton.innerHTML = "[x]";
-	xButton.onclick = function(){
-		labelDelete(label.id);
+        if (data.slideKey == getSlideId()) {
+          var label = document.getElementById(data.id);
+	  var xButtonLabel = label.getElementsByTagName("A")[0];
+          var labelText = label.getElementsByTagName("SPAN")[0];
+	  if (xButtonLabel) {
+	    label.removeChild(xButtonLabel);
+	  }
+	  label.removeChild(labelText);
+          var xButton = document.createElement("A");
+	  xButton.href = "#";
+	  xButton.innerHTML = "[x]";
+	  xButton.onclick = function(){
+	   	labelDelete(label.id);
 		return false;
-	}
-	label.appendChild(xButton);
-
- 	labelText.innerHTML = data.message;
-	label.appendChild(labelText);
+	  }
+	  label.appendChild(xButton);
+ 	  labelText.innerHTML = data.message;
+	  label.appendChild(labelText);
+        }
         });
 socket.on('deleted', function(data){
           var label = document.getElementById(data.id);
@@ -134,6 +138,7 @@ window.onload = function (){
 	createOperationMenu();
         }
 function createOperationMenu() {
+
 	var showButton = document.createElement("BUTTON");
         showButton.type = "button";
         showButton.innerHTML = "show";
@@ -147,6 +152,22 @@ function createOperationMenu() {
         //hideButton.addEventListener('click', hideAll, false);
 	hideButton.onclick = function(){ 
           hideAll(); };
+
+	var previousButton = document.createElement("BUTTON");
+        previousButton.type = "button";
+        previousButton.innerHTML = "< previous";
+        //hideButton.addEventListener('click', hideAll, false);
+	previousButton.onclick = function(){ 
+          prevSlide(); };
+
+
+	var nextButton = document.createElement("BUTTON");
+        nextButton.type = "button";
+        nextButton.innerHTML = "next >";
+        //hideButton.addEventListener('click', hideAll, false);
+	nextButton.onclick = function(){ 
+          nextSlide(); };
+
 
         var colorSelector = document.createElement("SELECT");
         var yellowOption = document.createElement("OPTION");
@@ -163,6 +184,8 @@ function createOperationMenu() {
 
         operation.appendChild(showButton);
 	operation.appendChild(hideButton);
+	operation.appendChild(previousButton);
+        operation.appendChild(nextButton);
         //operation.appendChild(colorSelector);
 }
 function addLabel (event) {
@@ -317,7 +340,6 @@ function labelLoad (data) {
 		reEdit(evt, this);
 		return false;
 	};
-        socket.json.emit('count up', {slideId: getSlideId()});
 }
 
 function getSlideId() {
