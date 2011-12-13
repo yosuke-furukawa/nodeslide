@@ -1,0 +1,119 @@
+div(class="presentation")
+  div(class="slides")
+    div(class="slide")
+      section
+        h1 Node vs Play
+        h1 リターンマッチ
+        h1 http://goo.gl/RCVW8
+    div(class="slide")
+      section
+        h4
+          | どうも、
+          a(href="http://twitter.com/#!/yosuke_furukawa") yosuke_furukawa
+          | です。
+        a(href="http://twitter.com/#!/yosuke_furukawa") 
+          img(src="images/twitter_icon.jpg")
+        p 
+          | blog:
+          a(href="http://d.hatena.ne.jp/yosuke_furukawa/") from scratch
+    div(class="slide")
+      section(class="left")
+        h4
+         | お手伝いさせていただいている活動：Play! 翻訳活動
+         a(href="http://playdocja.appspot.com/about")
+           img(src="images/play_icon.png")
+           img(src="images/translaters.png")
+    div(class="slide")
+      section(class="left")
+        h4 本スライドは Node.js で動作しています。
+        h4 スライドの中をダブルクリックすると、付箋が出て質問やコメントを書き込めます。
+        h4 推奨環境： Chrome, Safari
+        h4 
+         | Thanks for
+         a(href="https://node-ninja.com/") Node Ninja.
+    div(class="slide")
+      section
+        p みなさんはこの記事を知っているでしょうか?
+        a(href="http://www.subbu.org/blog/2011/03/nodejs-vs-play-for-front-end-apps") Nodejs vs Play for Front-End Apps
+        img(src="images/nodevsplay_blog.png")
+    div(class="slide")
+      section
+        p レンダリングありだと、Node 0.4.3 > Play 1.1.1
+        img(src="images/nodevsplay_render.png")        
+    div(class="slide")
+      section
+        p レンダリングなしだと、Play 1.1.1 > Node 0.4.3
+        img(src="images/nodevsplay_norender.png")
+        p という結果でした。
+    div(class="slide")
+      section
+        p レンダリングしていない間はPlayの方が
+        p Javaの恩恵を得られて速い。
+        p でもレンダリングするとGroovyのせいで
+        p Playの方が遅いという考察でした。
+    div(class="slide")
+      section
+        p しかし、この記事自体は今年の3月。
+        p 今ではNodeは0.6.5になり、
+        p Playは1.2.4で高速化され、さらにPlay 2.0のBeta版も公開されている。
+        p 内部実装も大幅に変わってきている。
+    div(class="slide")
+      section
+        h3 ならば再測定だ。
+        img(src="images/cleek.png")
+    div(class="slide")
+      section
+        h3 測定環境
+        p MacBook Air 
+        p CPU Intel Core i5 2core 64bit
+        p Memory 4GB
+        p 注：本当はサーバーを利用しようと思ったけど、時間の都合上断念。
+    div(class="slide")
+      section
+        h3 測定ツール
+        p JMeter 2.5.1 
+        p スレッド数 50
+        p Ramp-up 期間 10sec
+        p 10秒間の間に50回リクエストが来るという想定。
+    div(class="slide")
+      section
+        h1 Demo
+    div(class="slide")
+      section
+        h3 測定結果：Render No IO
+        img(src="https://docs.google.com/spreadsheet/oimg?key=0Ald70w564ag7dFBiZlkzZWFaUGdMTEEydjBVWVZzTlE&oid=4&zx=vmeax8xolcmr")
+    div(class="slide")
+      section
+        h3 測定結果：IO + Render
+        img(src="https://docs.google.com/spreadsheet/oimg?key=0Ald70w564ag7dFBiZlkzZWFaUGdMTEEydjBVWVZzTlE&oid=3&zx=v21c1ogndi52")
+    div(class="slide")
+      section
+        h3 結果
+        p 僅差で Play v1.2.4 + non-blocking I/O が一番早い。
+        p Groovyが早くなっている?
+    div(class="slide")
+      section
+        h3 測定結果：IO - No Render
+        img(src="https://docs.google.com/spreadsheet/oimg?key=0Ald70w564ag7dFBiZlkzZWFaUGdMTEEydjBVWVZzTlE&oid=5&zx=b6wvfvl7h7fh")
+        p レンダリングした時と時間があまり変わらない。
+    div(class="slide")
+      section
+        h3 Node cluster 考察
+        img(src="https://docs.google.com/spreadsheet/oimg?key=0Ald70w564ag7dFBiZlkzZWFaUGdMTEEydjBVWVZzTlE&oid=6&zx=1eqeqpxucbnw")
+        p 
+          a(href="http://d.hatena.ne.jp/scalar/20111111/1320994609") hakoberaさんのブログ
+          を参考にworker数を調整
+    div(class="slide")
+      section
+        h3 今後やってみたい事
+        p ql.ioとか使ってみたい。
+        p faster Groovy template engineを使ってみたい。
+        p Play2.0 リベンジ
+    div(class="slide")
+      section
+        h3 ご清聴ありがとうございました。
+        p 今回利用したソースと結果はGitHubに上げておきます。
+  div(class="counter") 0
+  div(class="operation")
+script(src="javascripts/slide.js")
+script(src="javascripts/stickypaper.js")

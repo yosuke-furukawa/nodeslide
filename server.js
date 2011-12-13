@@ -47,10 +47,12 @@ app.configure('production', function(){
 
 // Routes
 
+// Faviconはひとまず無視
 app.get('/favicon.ico', function(req, res){
   res.render('favicon.ico', {});
 });
 
+// URLの後ろはidとして考える
 app.get('/:id?', function(req, res){
   console.log(req.params.id);
   if (!req.params.id) {
@@ -75,7 +77,7 @@ console.log("Express server listening on port %d in %s mode", app.address().port
 // Process
 io = io.listen(app);
 io.sockets.on('connection', function (socket) {
-
+  // アクセスしたらsocketにslideIdをセットして、カウントアップする。
   socket.on('count up',function(data) {
     socket.set('slideId', data.slideId, function(){
       if (socketIds.indexOf(socket.id) < 0) {
@@ -88,6 +90,7 @@ io.sockets.on('connection', function (socket) {
       }
     });
   });
+  // 接続が切れたらsocketからslideIdを取ってきて、カウントダウンする。
   socket.on('disconnect', function () {
     console.log('disconnect');
     var index = socketIds.indexOf(socket.id);
@@ -96,6 +99,7 @@ io.sockets.on('connection', function (socket) {
       if (!err) {
       console.log("slideId disconnect" + slideId);
       var count = slideMap[slideId];
+      if (count != 0) 
       count--;
       slideMap[slideId] = count;
       io.sockets.emit('counter', {count : count, slideId: slideId});
@@ -104,6 +108,7 @@ io.sockets.on('connection', function (socket) {
       }
     });
   });
+  // slideKey(slideId)ごとの全コメントを送信する。
   Comment.find({slideKey: slideKey}, function(err,docs){ 
         if(!err) {
             for (var i = 0; i < docs.length; i++ ) {
@@ -125,6 +130,7 @@ io.sockets.on('connection', function (socket) {
 	}
 
   });
+  // 誰かが付箋を貼ったらdocumentを作成する。
   socket.on('create', function (data) {
 
     console.log(data);
@@ -149,7 +155,7 @@ io.sockets.on('connection', function (socket) {
       });
     }
   });
-
+  // テキスト編集されたらdocumentを更新する。
   socket.on('text edit', function (data) {
     if (data && data.message) {
       Comment.findById(data.id, function (err, comment) {
@@ -169,7 +175,7 @@ io.sockets.on('connection', function (socket) {
       });
     }
   });
-
+  // 削除されたらdocumentを削除する。
   socket.on('delete', function (data) {
     console.log(data);
     if (data) {
@@ -184,7 +190,7 @@ io.sockets.on('connection', function (socket) {
       });
     }
   });
-
+  // テキスト編集をキャンセルしたら一旦作ったdocumentを削除する。
   socket.on('cancel', function(data) {
     if (data) {
       Comment.findById(data.id, function (err, comment) {
@@ -198,7 +204,7 @@ io.sockets.on('connection', function (socket) {
 
     }
   });
-
+  // ドラッグで移動したらdocument位置を更新する。
   socket.on('update', function(data) {
      if (data) {
        Comment.findById(data.id, function(err, comment) {
@@ -220,13 +226,4 @@ io.sockets.on('connection', function (socket) {
      }
   });
 
-  //socket.emit('loaded', { id: 0, x: 500, y: 500, slideno: 0, message: 'message' });
-  //socket.emit('loaded', { id: 1, x: 250, y: 500, slideno: 2, message: 'message22' });
-  //socket.on('delete', function (data) {
-  //  console.log(data);
-  //});
-  //  socket.on('update', function (data) {
-  //  console.log(data);
-  //  socket.emit('updated', { id: 3 });
-  //});
 });
