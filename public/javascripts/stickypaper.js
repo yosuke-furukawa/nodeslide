@@ -3,7 +3,10 @@ var slidesClass = document.getElementsByClassName("slides")[0];
 var operation = document.getElementsByClassName("operation")[0];
 socket.on('loaded', function (data) {
 		labelLoad(data);
-                socket.json.emit('count up', {slideId: getSlideId()});
+                var count = {slideId: getSlideId()};
+                if (validate_slideId(count)) {
+                  socket.json.emit('count up', count);
+                }
 		});
 socket.on('counter', function (data) {
   var counter = document.getElementsByClassName("counter")[0];
@@ -45,7 +48,10 @@ socket.on('created', function (data) {
 		newLabel.removeChild(inputForm);
 		
                 console.log('currentSlideNo:%d', currentSlideNo);
-		socket.json.emit('text edit', {id: newLabel.id, message: htmlstr});
+                var textdata =  {id: newLabel.id, message: htmlstr};
+                if (validate_id(textdata) && validate_message(textdata)) {
+		  socket.json.emit('text edit', textdata);
+                }
 		newLabel.onmousedown = function (evt) { onDrag(evt, this) };
 		newLabel.ondblclick = function (evt) { reEdit(evt, this); return false; };
 		slidesClass.addEventListener("dblclick", addLabel, false);
@@ -59,7 +65,10 @@ socket.on('created', function (data) {
 	  cancelButton.onclick = function () { 
 		var node = newLabel.parentNode;
 		node.removeChild(newLabel);
-		socket.json.emit('cancel', {id: newLabel.id});
+                var canceldata =  {id: newLabel.id};
+                if (validate_id(canceldata)) {
+		  socket.json.emit('cancel',canceldata);
+                }
 		slidesClass.addEventListener("dblclick", addLabel, false);
 		document.addEventListener('keydown', handleBodyKeyDown, false);
 
@@ -194,7 +203,12 @@ function addLabel (event) {
         document.removeEventListener('keydown', handleBodyKeyDown, false);
 	var layerX = event.layerX;
         var layerY = event.layerY;
-	socket.json.emit('create', {x: layerX, y: layerY, slideno: currentSlideNo-1});
+	var createdata = {x: layerX, y: layerY, slideno: currentSlideNo-1};
+        console.log(validate_slideNo(createdata));
+        console.log(validate_position(createdata.x, createdata.y));
+        if (validate_slideNo(createdata) && validate_position(createdata.x, createdata.y)) {
+          socket.json.emit('create', createdata);
+        }
 }
 
 function onDrag (evt, item) {
@@ -216,9 +230,12 @@ function onDrag (evt, item) {
 	function mousemove(move) {
 		dx = move.screenX - x;
 		dy = move.screenY - y;
-		item.style.left = ( orgX + dx ) + "px";
-		item.style.top = ( orgY + dy ) + "px";
-		socket.json.emit('update', {id: item.id,x: orgX + dx, y: orgY + dy});
+                var movedata =  {id: item.id,x: orgX + dx, y: orgY + dy};
+                if (validate_id(movedata) && validate_position(movedata.x, movedata.y)) {
+		  socket.json.emit('update', movedata);
+                  item.style.left = ( orgX + dx ) + "px";
+                  item.style.top = ( orgY + dy ) + "px";
+                }
 	}
 
 	function mouseup (){
@@ -265,7 +282,10 @@ function reEdit (evt, oDiv) {
 		oDiv.appendChild(labelText);
 
 		oDiv.removeChild(inputForm);
-		socket.json.emit('text edit', {id: oDiv.id, message: str});
+		var editdata = {id: oDiv.id, message: str};
+                if (validate_id(editdata) && validate_message(editdata)) {
+                  socket.json.emit('text edit', editdata);
+                }
 
 		oDiv.onmousedown = function (evt) { onDrag(evt, this) };
 		oDiv.ondblclick = function (evt) { reEdit(evt,this); return false };
@@ -362,9 +382,10 @@ function escapeHTML(str) {
 
 
 function labelDelete(id) {
-	socket.json.emit('delete', {
-		id: id
-	});
+        var deletedata = {id: id};
+        if (validate_id(deletedata)) {
+          socket.json.emit('delete', deletedata);
+        }
 }
 
 function labelSave () {
