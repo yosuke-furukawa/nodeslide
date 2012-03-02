@@ -7,6 +7,10 @@ var express = require('express')
   , routes = require('./routes')
   , io = require('socket.io')
   , mongoose = require('mongoose')
+  , cluster = require('cluster');
+var check = require('./public/javascripts/check_args.js');
+var numCPUs = 1;
+
 
 var app = module.exports = express.createServer();
 var counter = 0;
@@ -71,24 +75,40 @@ app.get('/:id?', function(req, res){
   }
 });
 
-app.listen(process.env.PORT || 3000);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-
 // Process
+
+if (cluster.isMaster) {
+  // Fork workers.
+  console.log('Master' +  numCPUs);
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('death', function(worker) {
+    console.log('worker ' + worker.pid + ' died');
+    cluster.fork();
+  });
+} else {
+
+app.listen(process.env.PORT || 3000);
+console.log("Express server listening on port in %s mode", app.settings.env);
+
 io = io.listen(app);
 io.sockets.on('connection', function (socket) {
   // アクセスしたらsocketにslideIdをセットして、カウントアップする。
   socket.on('count up',function(data) {
-    socket.set('slideId', data.slideId, function(){
-      if (socketIds.indexOf(socket.id) < 0) {
-        socketIds.push(socket.id);
-        console.log(socket.id);
-        var count = slideMap[data.slideId];
-        count++;
-        slideMap[data.slideId] = count;
-        io.sockets.emit('counter', {count : count, slideId: data.slideId});
-      }
-    });
+    if (check.validate_slideId(data)) {
+      socket.set('slideId', data.slideId, function(){
+        if (socketIds.indexOf(socket.id) < 0) {
+          socketIds.push(socket.id);
+          console.log(socket.id);
+          var count = slideMap[data.slideId];
+          count++;
+          slideMap[data.slideId] = count;
+          io.sockets.emit('counter', {count : count, slideId: data.slideId});
+        }
+      });
+    }
   });
   // 接続が切れたらsocketからslideIdを取ってきて、カウントダウンする。
   socket.on('disconnect', function () {
@@ -135,29 +155,29 @@ io.sockets.on('connection', function (socket) {
 
     console.log(data);
     if (data) {
-      console.log("Data : %s", data.message);
-      console.log("Data : %s", data.slideno);
-
-      var comment = new Comment();
-      comment.slideno = data.slideno;
-      comment.x = data.x;
-      comment.y = data.y;
-      comment.slideKey = slideKey;
-      console.log(comment);
-      comment.save(function(err, doc) {
-	console.log('saved: %s', doc.id);
-        if (!err) { 
-          socket.emit('created', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y, slideKey:doc.slideKey});
-          socket.broadcast.emit('created by other', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y, slideKey:doc.slideKey});
-        } else {
-          console.log(err);
-        }
-      });
+      var valid_position = check.validate_position(data.x, data.y);
+      var valid_slideno = check.validate_slideNo(data);
+      if (valid_position && valid_slideno) {
+        var comment = new Comment();
+        comment.slideno = data.slideno;
+        comment.x = data.x;
+        comment.y = data.y;
+        comment.slideKey = slideKey;
+        console.log(comment);
+        comment.save(function(err, doc) {
+          if (!err) { 
+            socket.emit('created', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y, slideKey:doc.slideKey});
+            socket.broadcast.emit('created by other', {id: doc.id, slideno: doc.slideno, x: doc.x, y:doc.y, slideKey:doc.slideKey});
+          } else {
+            console.log(err);
+          }
+        });
+      }
     }
   });
   // テキスト編集されたらdocumentを更新する。
   socket.on('text edit', function (data) {
-    if (data && data.message) {
+    if (check.validate_message(data)) {
       Comment.findById(data.id, function (err, comment) {
         if (!err) {
           if (data.message != null) {
@@ -178,7 +198,7 @@ io.sockets.on('connection', function (socket) {
   // 削除されたらdocumentを削除する。
   socket.on('delete', function (data) {
     console.log(data);
-    if (data) {
+    if (check.validate_id(data)) {
       Comment.findById(data.id, function (err, comment) {
 	if (!err && comment) {
             comment.remove();
@@ -192,7 +212,7 @@ io.sockets.on('connection', function (socket) {
   });
   // テキスト編集をキャンセルしたら一旦作ったdocumentを削除する。
   socket.on('cancel', function(data) {
-    if (data) {
+    if (check.validate_id(data)) {
       Comment.findById(data.id, function (err, comment) {
 	if (!err && comment) {
             comment.remove();
@@ -206,7 +226,7 @@ io.sockets.on('connection', function (socket) {
   });
   // ドラッグで移動したらdocument位置を更新する。
   socket.on('update', function(data) {
-     if (data) {
+     if (check.validate_id(data) && check.validate_position(data.x, data.y)) {
        Comment.findById(data.id, function(err, comment) {
          if(!err && comment) {
          comment.x = data.x;
@@ -227,3 +247,4 @@ io.sockets.on('connection', function (socket) {
   });
 
 });
+}
