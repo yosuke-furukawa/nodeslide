@@ -133,9 +133,7 @@ io.sockets.on('connection', function (socket) {
         if(!err) {
             for (var i = 0; i < docs.length; i++ ) {
                 console.log(docs[i]);
-                var valid_position = check.validate_position(docs[i].x, docs[i].y);
-
-		if (docs[i].message && valid_position) {
+		if (docs[i].message) {
 			socket.emit('loaded', docs[i]);
                 } else {
 			Comment.findById(docs[i].id, function (err, comment) {
