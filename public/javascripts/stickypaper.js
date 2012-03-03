@@ -199,14 +199,14 @@ function createOperationMenu() {
 }
 function addLabel (event) {
 	//新しいラベルの追加
-	slidesClass.removeEventListener("dblclick", addLabel, false);
-        document.removeEventListener('keydown', handleBodyKeyDown, false);
 	var layerX = event.layerX;
         var layerY = event.layerY;
 	var createdata = {x: layerX, y: layerY, slideno: currentSlideNo-1};
         console.log(validate_slideNo(createdata));
         console.log(validate_position(createdata.x, createdata.y));
         if (validate_slideNo(createdata) && validate_position(createdata.x, createdata.y)) {
+	  slidesClass.removeEventListener("dblclick", addLabel, false);
+          document.removeEventListener('keydown', handleBodyKeyDown, false);
           socket.json.emit('create', createdata);
         }
 }
