@@ -6,8 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , io = require('socket.io')
-  , mongoose = require('mongoose')
-  , cluster = require('cluster');
+  , mongoose = require('mongoose');
 var check = require('./public/javascripts/check_args.js');
 var numCPUs = 1;
 
@@ -76,19 +75,6 @@ app.get('/:id?', function(req, res){
 });
 
 // Process
-
-if (cluster.isMaster) {
-  // Fork workers.
-  console.log('Master' +  numCPUs);
-  for (var i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-
-  cluster.on('death', function(worker) {
-    console.log('worker ' + worker.pid + ' died');
-    cluster.fork();
-  });
-} else {
 
 app.listen(process.env.PORT || 3000);
 console.log("Express server listening on port in %s mode", app.settings.env);
@@ -245,6 +231,4 @@ io.sockets.on('connection', function (socket) {
        });
      }
   });
-
 });
-}
