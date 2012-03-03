@@ -55,6 +55,10 @@ app.get('/favicon.ico', function(req, res){
   res.render('favicon.ico', {});
 });
 
+app.get('/ping', function(req, res) {
+    res.send('pong');
+});
+
 // URLの後ろはidとして考える
 app.get('/:id?', function(req, res){
   console.log(req.params.id);
@@ -81,6 +85,7 @@ console.log("Express server listening on port in %s mode", app.settings.env);
 
 io = io.listen(app);
 io.sockets.on('connection', function (socket) {
+  socket.emit('connect', true);
   // アクセスしたらsocketにslideIdをセットして、カウントアップする。
   socket.on('count up',function(data) {
     if (check.validate_slideId(data)) {
@@ -94,8 +99,30 @@ io.sockets.on('connection', function (socket) {
           io.sockets.emit('counter', {count : count, slideId: data.slideId});
         }
       });
+    }    
+  });
+  // slideKey(slideId)ごとの全コメントを送信する。
+  Comment.find({slideKey: slideKey}, function(err,docs){ 
+    if(!err) {
+      for (var i = 0; i < docs.length; i++ ) {
+        console.log(docs[i]);
+        if (docs[i].message) {
+          socket.emit('loaded', docs[i]);
+        } else {
+          Comment.findById(docs[i].id, function (err, comment) {
+            if (!err) {
+              comment.remove();
+            } else {
+              console.log(err);
+            }
+          });
+        }
+      }
+    } else {
+      console.log(err);
     }
   });
+
   // 接続が切れたらsocketからslideIdを取ってきて、カウントダウンする。
   socket.on('disconnect', function () {
     console.log('disconnect');
@@ -113,28 +140,6 @@ io.sockets.on('connection', function (socket) {
         console.log(err);
       }
     });
-  });
-  // slideKey(slideId)ごとの全コメントを送信する。
-  Comment.find({slideKey: slideKey}, function(err,docs){ 
-        if(!err) {
-            for (var i = 0; i < docs.length; i++ ) {
-                console.log(docs[i]);
-		if (docs[i].message) {
-			socket.emit('loaded', docs[i]);
-                } else {
-			Comment.findById(docs[i].id, function (err, comment) {
-			if (!err) {
-            			comment.remove();
-        		} else {
-          			console.log(err);
-        		}
-      			});
-		}
-            }
-        } else {
-	    console.log(err);
-	}
-
   });
   // 誰かが付箋を貼ったらdocumentを作成する。
   socket.on('create', function (data) {
@@ -232,3 +237,4 @@ io.sockets.on('connection', function (socket) {
      }
   });
 });
+

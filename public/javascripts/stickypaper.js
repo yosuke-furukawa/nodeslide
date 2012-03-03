@@ -1,13 +1,24 @@
 var socket = io.connect();
+var idArray = new Array();
+var connected = false;
 var slidesClass = document.getElementsByClassName("slides")[0];
 var operation = document.getElementsByClassName("operation")[0];
+socket.on('connect', function (data) {
+  var count = {slideId: getSlideId()};
+  if (validate_slideId(count)) {
+    socket.json.emit('count up', count);
+  }
+  connected = true;
+});
+socket.on('disconnect', function(data) {
+  connected = false;
+});
+
 socket.on('loaded', function (data) {
-		labelLoad(data);
-                var count = {slideId: getSlideId()};
-                if (validate_slideId(count)) {
-                  socket.json.emit('count up', count);
-                }
-		});
+  console.log(data._id);
+  console.log(data.message);
+  labelLoad(data);
+});
 socket.on('counter', function (data) {
   var counter = document.getElementsByClassName("counter")[0];
   var slideId = getSlideId();
@@ -30,6 +41,9 @@ socket.on('created', function (data) {
 	  inputText.style.cols = "10";
 	  inputText.style.rows = "3";
 	  inputForm.appendChild(inputText);
+
+	  newLabel.onmousedown = function (evt) { onDrag(evt, this) };
+
 
 	  var okButton = document.createElement("INPUT");
 	  okButton.type = "button";
@@ -146,8 +160,17 @@ window.onload = function (){
 	slidesClass.addEventListener("dblclick", addLabel, false);
 	createOperationMenu();
         }
-function createOperationMenu() {
 
+function reconnectSocket() {
+  if (!connected) {
+    $.get('/ping', function(data) {
+      window.location.href = unescape(window.location.pathname);
+      connected = true;
+    });
+  }
+}
+
+function createOperationMenu() {
 	var showButton = document.createElement("BUTTON");
         showButton.type = "button";
         showButton.innerHTML = "show";
@@ -199,6 +222,7 @@ function createOperationMenu() {
 }
 function addLabel (event) {
 	//新しいラベルの追加
+        reconnectSocket();
 	var layerX = event.layerX;
         var layerY = event.layerY;
 	var createdata = {x: layerX, y: layerY, slideno: currentSlideNo-1};
@@ -213,6 +237,8 @@ function addLabel (event) {
 
 function onDrag (evt, item) {
 	//ドラッグされるとラベルを移動する
+        reconnectSocket();
+
 	var x = 0;
 	var y = 0;
 
@@ -246,6 +272,8 @@ function onDrag (evt, item) {
 
 function reEdit (evt, oDiv) {
 	//ダブルクリックで再編集
+        reconnectSocket();
+
 	var str = oDiv.lastChild.innerHTML;
 	str = escapeHTML(str);
 
@@ -332,9 +360,10 @@ function labelLoad (data) {
 	//ラベルのロード
 
 	var newLabel = document.createElement("DIV");
-
+        if (idArray.indexOf(data._id) < 0) {
 	newLabel.className = "label";
 	newLabel.id = data._id;
+        idArray.push(data._id);
 	newLabel.style.left = data.x + "px";
 	newLabel.style.top = data.y + "px";
 	document.getElementsByClassName("slide")[data.slideno].appendChild(newLabel);
@@ -360,6 +389,7 @@ function labelLoad (data) {
 		reEdit(evt, this);
 		return false;
 	};
+        }
 }
 
 function getSlideId() {
@@ -382,6 +412,8 @@ function escapeHTML(str) {
 
 
 function labelDelete(id) {
+        reconnectSocket();
+
         var deletedata = {id: id};
         if (validate_id(deletedata)) {
           socket.json.emit('delete', deletedata);
@@ -393,6 +425,8 @@ function labelSave () {
 
 }
 function showAll() {
+  reconnectSocket();
+
   var labels = document.getElementsByClassName("label");
   console.log(labels);
   for (var i=0; i<labels.length; i++) {
@@ -401,6 +435,8 @@ function showAll() {
   }
 }
 function hideAll() {
+  reconnectSocket();
+
   var labels = document.getElementsByClassName("label");
   console.log(labels.length);
   for (var i=0; i<labels.length; i++) {
@@ -408,4 +444,5 @@ function hideAll() {
     labels[i].style.display='none';
   }
 }
+
 
