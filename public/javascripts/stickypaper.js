@@ -168,10 +168,10 @@ window.onload = function (){
 
 function reconnectSocket() {
   if (!connected) {
-    //$.get('/ping', function(data) {
-      //window.location.href = unescape(window.location.pathname);
-      //connected = true;
-    //});
+    $.get('/ping', function(data) {
+      connected = true;
+      window.location.href = unescape(window.location.pathname);
+    });
   }
 }
 
