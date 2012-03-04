@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost', {
+var socket = io.connect('http://yosuketest.node-ninja.com', {
   'reconnect': true,
   'reconnection delay': 500,
   'max reconnection attempts': 10
