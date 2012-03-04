@@ -1,4 +1,8 @@
-var socket = io.connect();
+var socket = io.connect('http://localhost', {
+  'reconnect': true,
+  'reconnection delay': 500,
+  'max reconnection attempts': 10
+});
 var idArray = new Array();
 var connected = false;
 var slidesClass = document.getElementsByClassName("slides")[0];
@@ -31,6 +35,7 @@ socket.on('created', function (data) {
 	  var newLabel = document.createElement("DIV");
           var message;
 	  newLabel.id = data.id;
+          idArray.push(data.id);
 	  newLabel.className = "label";
 	  newLabel.style.left = data.x + "px";
 	  newLabel.style.top = data.y + "px";
@@ -163,10 +168,10 @@ window.onload = function (){
 
 function reconnectSocket() {
   if (!connected) {
-    $.get('/ping', function(data) {
-      window.location.href = unescape(window.location.pathname);
-      connected = true;
-    });
+    //$.get('/ping', function(data) {
+      //window.location.href = unescape(window.location.pathname);
+      //connected = true;
+    //});
   }
 }
 
