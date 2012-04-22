@@ -1,0 +1,176 @@
+div(class="presentation")
+  div(class="slides")
+    div(class="slide")
+      section
+        h1 
+          | Node.js Basic Ver. 
+    div(class="slide")
+      section
+        h1
+          | What is Node??
+    div(class="slide")
+      section
+        h1 Node.js自身は単なるJavaScript実行環境。
+        p 特徴は3つ。
+    div(class="slide")
+      section
+        p 1. Non-blocking IO
+        p 2. event loop model
+        p 3. V8
+    div(class="slide")
+      section
+        h1 Non-blocking IO
+    div(class="slide")
+      section
+        img(src="http://www.nearinfinity.com/blogs/assets/jkunkle/latency-bar-graph.png")
+        p IO Latency
+    div(class="slide")
+      section
+        p L1, L2 >> RAM >>> Disk >>>>> Network
+    div(class="slide")
+      section
+        p memory is so fast.
+        p Disk and Network are so slow...
+        p All machienes are top-heavy like this.
+        img(src="http://dg.galman.jp/img/001de_5710/%E3%83%AA%E3%83%A9%E3%83%83%E3%82%AF%E3%83%9E_l.gif")
+    div(class="slide")
+      section
+        p parsing a request, invoking an application logic,
+        p execute database operations, ★ WAIT FOR IO
+        p write some data to log, ★ WAIT FOR IO
+        p respond a response.
+        img(src="http://www.nearinfinity.com/blogs/assets/jkunkle/waiting.png")
+    div(class="slide")
+      section
+        p So, Node.js selects Non-blocking IO
+    div(class="slide")
+      section
+        h1 event loop model
+    div(class="slide")
+      section
+        h1 基本的にNode.jsはシングルスレッド。
+    div(class="slide")
+      section
+        h3 Pros and Cons
+        p Pros: easy implementation, save your resource.
+        p Cons: if someone stops the loop, the systems stop.
+    div(class="slide")
+      section
+        h3 イベントループ vs スレッド
+        p イベントループのが簡単でリソース使わない。
+        p スレッドのほうが難しいけど、
+        p ひとつのスレッドが止まっても動く。
+    div(class="slide")
+      section
+        p Node.jsは先の説明の通り、Disk IOじゃー止まらない。
+    div(class="slide")
+      section
+        h1 でも。。。CPUプリエンプティブな処理は止まる。
+    div(class="slide")
+      section
+        h1 例：Fibonacci数列
+        img(src="/images/nodefibonacci.png")
+        p Fibonacci(50)とか実行すると、数十秒かかる。→ 数十秒全体処理が止まる。
+    div(class="slide")
+      section
+        p でも、選択肢は用意されている。
+        p v0.6 〜 Cluster マルチプロセス
+        p v0.7 〜 Isolates マルチスレッド
+    div(class="slide")
+      section
+        h1 V8
+    div(class="slide")
+      section
+        p V8はGoogle Chromeで実装されているJavaScript実行モジュール
+        img(src="http://ggsoku.com/wp-content/uploads/google-chrome.png")
+    div(class="slide")
+      section
+        p 長期にわたるブラウザ戦争 → JS高速化
+        img(src="http://userdisk.webry.biglobe.ne.jp/005/532/97/N000/000/000/123064618847916201424_20081229184419.jpg")
+    div(class="slide")
+      section
+        p 高速化の末、これまではクライアントでしか使い道がなかったJavaScriptだが、サーバーサイドでも使えるようになってきた。
+    div(class="slide")
+      section
+        h1 Node.js vs Play
+        img(src="https://docs.google.com/spreadsheet/oimg?key=0Ald70w564ag7dFBiZlkzZWFaUGdMTEEydjBVWVZzTlE&oid=3&zx=v21c1ogndi52")
+    div(class="slide")
+      section
+        p 実行速度だけで見ても大差ない。
+    div(class="slide")
+      section
+        p 大体こんな感じ。
+    div(class="slide")
+      section
+        p これだけじゃ流行っている理由がわからない？
+    div(class="slide")
+      section
+        p 自分が思う、最もNode.jsが流行っている理由
+        h3 Socket.ioでWebSocketの処理を取り込んだこと。
+    div(class="slide")
+      section
+        h3 Socket.ioとは？
+        p WebSocket等のリアルタイム双方向コミュニケーションを実現するJavaScriptライブラリ
+    div(class="slide")
+      section
+        p Websocket何が良いの？ Comet vs WebSocket
+        img(src="http://image.gihyo.co.jp/assets/images/dev/feature/01/websocket/0001/zu6.png")
+    div(class="slide")
+      section
+        p Websocket何が良いの？ Comet vs Websocket
+        img(src="http://image.gihyo.co.jp/assets/images/dev/feature/01/websocket/0001/zu7.png")
+    div(class="slide")
+      section
+        h1 Node まとめ
+    div(class="slide")
+      section(class="left")
+        p Nodeの特徴
+        p 1. Non-blocking IO 非同期でファイルIOする仕組み
+        p 2. V8 Chromeで使われている爆速JavaScript実行基盤
+        p 3. event loop model シングルスレッドで実現する考え方、実装が簡単。最近はマルチスレッド、マルチプロセスの選択肢も用意されている。
+    div(class="slide")
+      section
+        p Nodeのキラーアプリ
+        p Socket.IO リアルタイム双方向性を持つ
+        p JavaScriptライブラリ
+    div(class="slide")
+      section
+        p じゃーインストールしてみよう。
+    div(class="slide")
+      section
+        p まずはココへ行くなり。
+        a(href="https://sites.google.com/site/nodejyuku/how_to_install_for_windows")
+           Node塾インストールメモ
+    div(class="slide")
+      section
+        p 次はHello World.
+        p node -e "console.log('hello world');" を実行する。
+    div(class="slide")
+      section
+        p 次はブラウザからHello World.
+        p node -e "require('http').createServer(function(req, res) { res.end('hello world'); }).listen(3000);"を実行する。
+    div(class="slide")
+      section
+        p 環境構築も済んだし、後は色々見ながらやってみよう！
+    div(class="slide")
+      section
+        p Bye.
+    div(class="slide")
+      section
+        h1 Next 勉強会
+    div(class="slide")
+      section
+        p こんな感じで、まずは広く浅く最新技術を紹介していこうかなと思います。
+    div(class="slide")
+      section
+        p だんだん野心的になるために、他の技術も積み上げて行きましょう。
+    div(class="slide")
+      section
+        p キーワード
+        p Next Web application: Node.js, Play!
+        p Next Database: KVS, MongoDB, Redis
+        p Next Client: Android, iPhone, Windows Phone
+  div(class="counter") 0
+  div(class="operation")
+script(src="javascripts/slide.js")
+script(src="javascripts/stickypaper.js")

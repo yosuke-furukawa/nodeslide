@@ -1,8 +1,4 @@
-var socket = io.connect('http://yosuketest.node-ninja.com', {
-  'reconnect': true,
-  'reconnection delay': 500,
-  'max reconnection attempts': 10
-});
+var socket = io.connect();
 var idArray = new Array();
 var connected = false;
 var slidesClass = document.getElementsByClassName("slides")[0];
