@@ -166,7 +166,7 @@ io.sockets.on('connection', function (socket) {
       }
     }
   });
-  // テキスト編集されたらdocumentを更新する。
+  //   テキスト編集されたらdocumentを更新する。
   socket.on('text edit', function (data) {
     if (check.validate_message(data)) {
       Comment.findById(data.id, function (err, comment) {
